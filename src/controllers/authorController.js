@@ -4,7 +4,7 @@ let regex=new RegExp('[a-z0-9]+@[a-z]mail.com');
 
 const createAuthor= async function (req, res) {
     try{
-    let author = req.body;
+    let author = req.body
     let{title,fname,lname,email,password}=author
     if(!title){return res.status(400).send({status:false,msg :"title is needed"})}
     if(!fname){return res.status(400).send({status:false,msg :" first name is needed"})}
