@@ -1,4 +1,3 @@
-const { create } = require('../models/authorModel')
 const authorModel = require('../models/authorModel')
 
 let regex=new RegExp('[a-z0-9]+@[a-z].com');
