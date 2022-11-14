@@ -15,14 +15,14 @@ const blogSchema = new mongoose.Schema( {
         required:true
     },
     tags: {
-        type:Array,  
+        type:[String],  
     },
      category:{
          type:String,
          required:true
      },
      subcategory:{
-        type:Array
+        type:[String]
      },
      deletedAt:{
         type:Date
