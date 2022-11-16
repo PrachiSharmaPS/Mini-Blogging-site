@@ -2,10 +2,11 @@ const { isValidObjectId } = require("mongoose");
 
 const blogModel = require("../models/blogModel");
 
+//---------------------Create Blog--------------------------------
 const createBlog = async function (req, res) {
   try {
     let blog = req.body;
-    let { title, body, authorId, category, publishedAt, isPublished } = blog;
+    let { title, body, authorId, category} = blog;
     if (!title) {
       return res.status(400).send({ status: false, msg: "title is mandatory" });
     }
@@ -34,19 +35,18 @@ const createBlog = async function (req, res) {
     return res.status(500).send({ status: false, msg: err.message });
   }
 };
-//-------------------get blog-----
+//-------------------Get Blog----------------------------
 const getBlogs = async function (req, res) {
   try {
     let { authorId, category, tags, subcategory } = req.query;
     let filter = { isDeleted: false, isPublished: true };
 
-    if (!authorId) {
-      if (!category) {
+    if (!authorId) {if (!category) {
         if (!tags) {
           if (!subcategory) {
             let allBlog = await blogModel.find();
-            return res.status(300).send({ status: true, data: allBlog });
-            //  return res.status(400).send({status:false,msg:'category,author id etc is mandatory'});
+            return res.status(200).send({ status: true, data: allBlog });
+            
           }
         }
       }
@@ -83,7 +83,7 @@ const getBlogs = async function (req, res) {
     return res.status(500).send({ status: false, msg: err.message });
   }
 };
-//-------------------Update blog ----
+//-------------------Update Blog-----------------------
 
 const updateBlog = async function(req,res){
   try{
@@ -112,8 +112,6 @@ const updateBlog = async function(req,res){
      }
 }
 
-
-
 //------------------path params-----
 const deleteBlog = async function (req, res) {
   try {
@@ -122,42 +120,37 @@ const deleteBlog = async function (req, res) {
     if(!isValidObjectId(blogId)){
       return res.status(404).send({status:false,msg:"blog id not found"})
   }
-
     let checkBlogId = await blogModel.findById(blogId);
-    
-    
+ 
     if (!checkBlogId || checkBlogId.isDeleted == true) {
       
       return res
         .status(404)
         .send({ status: false, msg: "Blog already deleted" });
     }
-
-    let deleteBlog = await blogModel.findOneAndUpdate(
+  let deleteBlog = await blogModel.findOneAndUpdate(
       { _id: blogId },
       { $set: { isDeleted: true, deletedAt: Date.now() } },
       { new: true }
     );
     return res.status(200).send({
       status: true,
-      msg: "Blog deleted sucessfully",
       data: deleteBlog,
     });
   } catch (error) {
-    res.status(500).send({ status: false, msg: error.message });
+   return res.status(500).send({ status: false, msg: error.message });
   }
 };
-//------------------delet by query---
+//------------------delete by query---
 const deleteByQuery = async function(req,res){
   try{
-
-      const data = req.query;
+     const data = req.query;
       const filterQuery = {isPublished:false,isDeleted:false}
 
       let {category,tags,subcategory,authorId} = data;
 
       if(Object.keys(data).length == 0){
-          return res.status.send({status:false,msg:"Please Give at least One Query/filter"})
+          return res.status(400).send({status:false,msg:"Please Give at least One Query/filter"})
       }
       if (authorId){
            filterQuery.authorId=authorId
@@ -183,9 +176,8 @@ const deleteByQuery = async function(req,res){
       const deleteData = await blogModel.updateMany(filterQuery,{$set:{isDeleted:true,deletedAt:new Date()}})
       
       if (deleteData.modifiedCount==0){
-          return res.send({msg:"Document not found"})
+          return res.status(404).send({msg:"Document not found"})
       }
-      
       return res.status(200).send({status:true,data:deleteData})
   }
   catch (err) {
@@ -193,11 +185,9 @@ const deleteByQuery = async function(req,res){
      }
 
 }
-
-
-
 module.exports.createBlog = createBlog;
 module.exports.getBlogs = getBlogs;
+
 module.exports.updateBlog = updateBlog;
 
 module.exports.deleteBlog = deleteBlog;
