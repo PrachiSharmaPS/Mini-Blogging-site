@@ -3,17 +3,21 @@ const blogModel = require("../models/blogModel");
 
 //-----------------Authentication-------------------------------
 const authentication = function (req, res, Next) {
-    let token = req.headers["x-api-key"];
-    if (!token) return res.status(400).send({ status: false, msg: "token must be present" });
+  const token = req.headers["x-api-key"];
+  if (!token) return res.status(400).send({ status: false, msg: "token must be present" });
 
-    console.log(token);
-    let decodedToken = jwt.verify(token,"Blog@Project-One");
+  jwt.verify(token, 'Blog@Project-One', function(err, decoded) {
+    
+    if(err) {return res.status(401).send({status:false,msg:"please enter valid token"})}
+    else{
+      
+      req.decodedToken = decoded
+      Next() 
+    } 
+  })
 
-    if (!decodedToken)
-        return res.status(401).send({ status: false, msg: "token is invalid" });
-       req.decodedToken=decodedToken
-        Next()
 }
+
 //-----------------Authorization-------------------------------
 const authorization = async function(req,res,next){
     try{

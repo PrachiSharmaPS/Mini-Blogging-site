@@ -4,7 +4,8 @@
   "description": "\"Lithium project/Blog 1 \"",
   "main": "index.js",
   "scripts": {
-    "test": "server/server error"
+    "test": "server/server error",
+    "start": "nodemon src/index.js"
   },
   "repository": {
     "type": "git",

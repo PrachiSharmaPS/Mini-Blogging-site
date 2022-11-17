@@ -138,3 +138,56 @@ Refer below sample
 #### Refer https://jsonplaceholder.typicode.com/guide/ for some fake blogs data.
 
 #### Note: Create a group database and use the same database in connection string by replacing `groupXDatabase
+//=--const deleteByQuery = async function(req,res){
+  try{
+     const data = req.query;
+      const filterQuery = {isPublished:false,isDeleted:false}
+
+      let {category,tags,subcategory,authorId} = data;
+
+      if(Object.keys(data).length == 0){
+          return res.status(400).send({status:false,msg:"Please Give at least One Query/filter"})
+      }
+
+      //authorisations --->
+      if (authorId){
+          if (authorId == req.decodeToken.userId){
+             filterQuery.authorId = authorId
+          } 
+          else {
+               return res.status(404).send({msg: "user is not authorised for this operation"})
+              }
+     } 
+     else{
+      filterQuery.authorId = req.decodeToken.userId
+     }
+     if(authorId){
+      if(!isValidObjectId(authorId)){
+          return res.status(400).send({status:false,msg:"please enter a valid author id"})
+      }
+    }
+
+    ///--->
+      if(category){
+           filterQuery.category=category
+      }
+      if(tags){
+          filterQuery.tags=tags
+      }
+      if(subcategory){
+           filterQuery.subcategory=subcategory
+          }
+
+      const deleteData = await blogModel.updateMany(filterQuery,{$set:{isDeleted:true,deletedAt:new Date()}})
+      
+      if (deleteData.modifiedCount==0){
+          return res.status(404).send({msg:"Document not found"})
+      }
+      
+      return res.status(200).send({status:true,data:deleteData})
+  }
+  catch (err) {
+      return  res.status(500).send({ status: false, msg: err.message });
+     }
+
+}
