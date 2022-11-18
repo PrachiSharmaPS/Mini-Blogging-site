@@ -28,7 +28,7 @@ const createAuthor= async function (req, res) {
             return res.status(400).send({status:false, msg:"Email is already exists"})}
 
             if(title != "Mr" && title !="Mrs" && title != "Miss"){
-                return res.status(400).send({status:false,msg:"title can only be MR,Mrs,Miss"})
+                return res.status(400).send({status:false,msg:"title can only be Mr,Mrs,Miss"})
             }       
 
     const authorCreated = await authorModel.create(author)
