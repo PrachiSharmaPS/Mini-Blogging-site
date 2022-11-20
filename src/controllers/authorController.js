@@ -2,6 +2,8 @@ const authorModel = require('../models/authorModel')
 const jwt= require("jsonwebtoken");
 
 let regex=new RegExp('[a-zA-Z0-9]+@[a-z]mail.com');
+let name=new RegExp('[A-Za-z]');
+
 
 
 //---------------------------------Create Author-----------------------------------
@@ -22,6 +24,11 @@ const createAuthor= async function (req, res) {
     
   const verifyEmail= regex.test(email)
     if(!verifyEmail){ return res.status(400).send({status:false,msg :"Invalid Email"})}
+
+    const verifyFName= name.test(fname)
+    if(!verifyFName){ return res.status(400).send({status:false,msg :"Invalid First Name"})}
+  const verifyLName= name.test(lname)
+    if(!verifyLName){ return res.status(400).send({status:false,msg :"Invalid Last Name"})}
 
     const emailid= await authorModel.findOne({email:email})
         if(emailid){ 
